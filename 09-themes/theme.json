@@ -22,18 +22,35 @@
         },
         {
             "tag": "Person",
-            "background": "#08427b",
             "color": "#ffffff",
             "shape": "Person",
             "fontSize": 22
         },
         {
+            "tag": "Customer",
+            "background": "#08427b"
+        },
+        {
+            "tag": "Employee",
+            "background": "#999999"
+        },
+        {
             "tag": "Container",
-            "background": "#ffffff"
+            "background": "#438dd5",
+            "color": "#ffffff"
+        },
+        {
+            "tag": "Existing System",
+            "background": "#999999",
+            "color": "#ffffff"
         },
         {
             "tag": "Failover",
             "opacity": 25
+        },
+        {
+            "tag": "Topic",
+            "shape": "pipe"
         },
         {
             "tag": "Infrastructure Node",
