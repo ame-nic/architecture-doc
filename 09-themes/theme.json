@@ -1,0 +1,75 @@
+{
+    "name": "Structurizr - Cloud Service",
+    "description": "The software architecture model for the Structurizr cloud service.",
+    "elements": [
+        {
+            "tag": "Software System",
+            "background": "#1168bd",
+            "color": "#ffffff",
+            "shape": "RoundedBox"
+        },
+        {
+            "tag": "Structurizr cloud service",
+            "background": "#02172c",
+            "color": "#ffffff"
+        },
+        {
+            "tag": "Person",
+            "background": "#08427b",
+            "color": "#ffffff",
+            "shape": "Person"
+        },
+        {
+            "tag": "Container",
+            "background": "#ffffff"
+        },
+        {
+            "tag": "Infrastructure Node",
+            "background": "#ffffff",
+            "shape": "RoundedBox"
+        },
+        {
+            "tag": "Database",
+            "shape": "Cylinder"
+        },
+        {
+            "tag": "Object Store",
+            "background": "#ffffff",
+            "shape": "Folder"
+        },
+        {
+            "tag": "Automation Software",
+            "shape": "Robot"
+        },
+        {
+            "tag": "Component",
+            "background": "#85bbf0",
+            "color": "#000000",
+            "fontSize": 16
+        },
+        {
+            "tag": "Apache Tomcat",
+            "icon": "icons/tomcat.png"
+        },
+        {
+            "tag": "Spring Application",
+            "icon": "icons/spring.png"
+        },
+        {
+            "tag": "Quarkus Application",
+            "icon": "icons/quarkus.png"
+        },
+        {
+            "tag": "Docker",
+            "icon": "icons/docker.png"
+        },
+        {
+            "tag": "Camunda",
+            "icon": "icons/camunda.webp"
+        },
+        {
+            "tag": "Redis",
+            "icon": "icons/redis.webp"
+        }
+    ]
+}
