@@ -54,7 +54,6 @@
         },
         {
             "tag": "Infrastructure Node",
-            "background": "#ffffff",
             "shape": "RoundedBox"
         },
         {
@@ -71,7 +70,6 @@
         },
         {
             "tag": "Object Store",
-            "background": "#ffffff",
             "shape": "Folder"
         },
         {
