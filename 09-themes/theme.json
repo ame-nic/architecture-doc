@@ -3,25 +3,37 @@
     "description": "The software architecture model for the Structurizr cloud service.",
     "elements": [
         {
+            "tag": "AWS",
+            "shape": "RoundedBox",
+            "background": "#ffffff",
+            "color": "#000000"
+        },
+        {
+            "tag": "K8s",
+            "shape": "RoundedBox",
+            "background": "#ffffff",
+            "color": "#000000"
+        },
+        {
             "tag": "Software System",
             "background": "#1168bd",
             "color": "#ffffff",
             "shape": "RoundedBox"
         },
         {
-            "tag": "Structurizr cloud service",
-            "background": "#02172c",
-            "color": "#ffffff"
-        },
-        {
             "tag": "Person",
             "background": "#08427b",
             "color": "#ffffff",
-            "shape": "Person"
+            "shape": "Person",
+            "fontSize": 22
         },
         {
             "tag": "Container",
             "background": "#ffffff"
+        },
+        {
+            "tag": "Failover",
+            "opacity": 25
         },
         {
             "tag": "Infrastructure Node",
@@ -31,6 +43,14 @@
         {
             "tag": "Database",
             "shape": "Cylinder"
+        },
+        {
+            "tag": "Mobile App",
+            "shape": "MobileDeviceLandscape"
+        },
+        {
+            "tag": "Web Browser",
+            "shape": "WebBrowser"
         },
         {
             "tag": "Object Store",
