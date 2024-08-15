@@ -83,6 +83,14 @@
             "fontSize": 16
         },
         {
+            "tag": "Asynchronous",
+            "dashed": "true"
+        },
+        {
+            "tag": "Synchronous",
+            "dashed": "false"
+        },
+        {
             "tag": "Apache Tomcat",
             "icon": "icons/tomcat.png"
         },
