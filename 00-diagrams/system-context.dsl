@@ -4,8 +4,8 @@ workspace {
 
     !identifiers hierarchical
 
-    !adrs ../01-docs/architecture/decisions/system-context
-    !docs ../01-docs
+    !adrs "../01-docs/architecture/decisions/system-context"
+    !docs "../01-docs"
 
     model {
 
@@ -15,7 +15,7 @@ workspace {
         }
 
         po = person "Product Owner" {
-            tags "Customer"
+            tags "Employee"
             description "The actor that manages a product"
         }
 
@@ -23,34 +23,49 @@ workspace {
 
         }
 
+        callerSystem = softwareSystem "callerSystem" {
+            tags "Existing System"
+        }
+
         acumen = softwareSystem "Acumen KB" {
             description ""
 
-            apiGW = container "AWS API Gateway" {
-                technology "API Gateway"
-                tags "AWS" "Amazon Web Services - API Gateway"
+            ontologyFE = container "ontology-fe" {
+                tags "Web Browser"
             }
 
             ontology = container "ontology" {
 
             }
 
-            orchestrator = container "orchestrator" {
-                tags "K8s" "Kubernetes - deploy"
+            kb = container "knowledge-base" {
 
+                component "event-store"
+                component "inferrer"
+                component "searcher"
+                component "learner"
+                component "planner"
+                component "consistency-checker"
+                component "privateGPT"
+                component "smart-knwowledge-base" "It is able to build the graph of all relations"
+
+            }
+
+            orchestrator = container "workflow-manager" {
+                tags "Camunda"
+                technology "Camunda"
             }
             
             aiGateway = container "ai-gateway" {
-                tags "K8s" "Kubernetes - deploy"
                 
             }
 
             resourceHandler = container "resource-handler" {
-                tags "K8s" "Kubernetes - deploy"
+                
             }
 
             eventHandler = container "event-handler" {
-                tags "K8s" "Kubernetes - deploy"
+                
             }
 
             messageBroker = container "message-broker" {
@@ -66,31 +81,45 @@ workspace {
                 }
             }
 
-            rhDB = container "resources-database" {
+            rhDB = container "resources-db" {
                 tags "Database"
-                technology "RDS"
+                technology "NoSQL, document-db"
             }
 
-
-            ontologyDB = container "ontology-database" {
-                tags "Database"
-                technology "RDS"
+            rhOS = container "resources-object-storage" {
+                tags "Object Store"
+                technology "NoSQL, Object Storage"
             }
 
-            apiGW -> ontology "routes-traffic"
+            ontologyDB = container "ontology-db" {
+                tags "Database"
+                technology "relational-db"
+            }
+
+            clauseDB = container "clause-db" {
+                tags "Database"
+                technology "tuple-db"
+            }
+
+            callerSystem -> acumen "calls"
             ontology -> messageBroker "produces"
+            ontologyFE -> ontology "calls"
             ontology -> ontologyDB "reads/writes"
-            apiGW -> resourceHandler "routes-traffic"
             po -> acumen "configures"
             po -> acumen "defines  pipelines"
             acumen -> dts "orchestrates"
             orchestrator -> dts "orchestrates"
+            orchestrator -> resourceHandler "orchestrates"
             orchestrator -> messageBroker "produces"
             orchestrator -> messageBroker "consumes"
+            kb -> messageBroker "consumes"
             resourceHandler -> rhDB "reads"
+            resourceHandler -> rhOS "generates presignedURL"
             resourceHandler -> messageBroker "produces"
             eventHandler -> rhDB "writes"
             eventHandler -> messageBroker "consumes"
+            aiGateway -> kb "calls"
+            kb -> clauseDB "reads/writes"
 
         }
 
@@ -113,8 +142,42 @@ workspace {
                         
                         deploymentNode "Ubuntu Server" {
                             instances 6
-                            containerInstance acumen.resourceHandler
-                            containerInstance acumen.eventHandler
+
+                            deploymentNode "ontology-deployment" {
+                                tags "K8s" "Kubernetes - deploy"
+                                deploymentNode "Ontology" {
+                                    tags "K8s" "Kubernetes - pod"
+                                    instances 3
+                                    deploymentNode "Quarkus Runtime" {
+                                        tags "Quarkus Application"
+                                        containerInstance acumen.ontology
+                                    }
+                                }
+                            }
+
+                            deploymentNode "resource-handler-deployment" {
+                                tags "K8s" "Kubernetes - deploy"
+                                deploymentNode "Resource Handler" {
+                                    tags "K8s" "Kubernetes - pod"
+                                    instances 3
+                                    deploymentNode "Quarkus Runtime" {
+                                        tags "Quarkus Application"
+                                        containerInstance acumen.resourceHandler
+                                    }
+                                }
+                            }
+
+                            deploymentNode "event-handler-deployment" {
+                                tags "K8s" "Kubernetes - deploy"
+                                deploymentNode "Event Handler" {
+                                    tags "K8s" "Kubernetes - pod"
+                                    instances 3
+                                    deploymentNode "Quarkus Runtime" {
+                                        tags "Quarkus Application"
+                                        containerInstance acumen.eventHandler
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -122,10 +185,24 @@ workspace {
                         tags "AWS" "Amazon Web Services - RDS"
                         
                         deploymentNode "PostgreSQL" {
-                            tags "AWS" "Amazon Web Services - RDS MySQL instance"
+                            tags "AWS" "Amazon Web Services - RDS PostgreSQL instance"
                             
                             containerInstance acumen.rhDB
-                            containerInstance acumen.ontologyDB
+                            containerInstance acumen.clauseDB
+                        }
+                    }
+
+                    deploymentNode "Amazon DocumentDB" {
+                        tags "AWS" "Amazon Web Services - DocumentDB"
+                        
+                        containerInstance acumen.ontologyDB
+                    }
+
+                    s3 = deploymentNode "Amazon S3" {
+                        tags "AWS" "Amazon Web Services - Simple Storage Service"
+
+                        containerInstance acumen.rhOS {
+                            tags "AWS" "Amazon Web Services - Simple Storage Service Bucket"
                         }
                     }
 
@@ -133,7 +210,18 @@ workspace {
                         tags "AWS" "Amazon Web Services - Managed Streaming for Apache Kafka"
                     }
 
+                    ecr = infrastructureNode "Amazon ECR" {
+                        tags "AWS" "Amazon Web Services - Elastic Container Registry"
+                    }
+
+                    apiGW = infrastructureNode "AWS API Gateway" {
+                        tags "AWS" "Amazon Web Services - API Gateway"
+                    }
+
+                    apiGW -> eks "exposes"
                     eks -> msk "produces/consumes"
+                    eks -> ecr "pulls images"
+                    eks -> s3 "accesses"
                 }
             }
         }
@@ -149,21 +237,27 @@ workspace {
         container acumen {
             include *
             include dts
-            autoLayout
+            autoLayout tb 500 500
         }
 
-        component acumen.messageBroker "Components" {
+        component acumen.messageBroker "Message_Broker-Topics" {
             include *
             autoLayout
-            description "The component diagram for the API Application."
+            description "The component diagram for the Message Broker"
+        }
+
+        component acumen.kb "Knowledge_Base-Components" {
+            include *
+            autoLayout
+            description "The component diagram for the Knowledge Base"
         }
 
         deployment acumen devEnv {
             include *
-            autoLayout lr
+            autoLayout lr 500
         }
 
-        themes "https://static.structurizr.com/themes/amazon-web-services-2023.01.31/theme.json" "https://static.structurizr.com/themes/kubernetes-v0.3/theme.json"
+        themes "https://static.structurizr.com/themes/amazon-web-services-2020.04.30/theme.json" "https://static.structurizr.com/themes/amazon-web-services-2023.01.31/theme.json" "https://static.structurizr.com/themes/kubernetes-v0.3/theme.json" "https://raw.githubusercontent.com/amenic-hub/architecture-doc/main/09-themes/theme.json"
     }
 
 }
